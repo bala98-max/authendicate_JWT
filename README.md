@@ -8,4 +8,4 @@ Auth Routes
 5) /logout - GET --> log a user
 
 
-need to start with - 13th - 8 min
+need to start with - 14th 

@@ -20,10 +20,10 @@ const handleError = function(err){
     }
 
     if(err.message.includes("Incorrect password")){
-        errors['password'] = err.message;
+        errors['password'] = "This password is incorrect";
     }
     if(err.message.includes("Incorrect email")){
-        errors['email'] = err.message;
+        errors['email'] = "This email is not registered";
     }
     return errors;
 }
@@ -53,7 +53,7 @@ module.exports.signup_post = async(req,res)=>{
         // create a token
         const token = createToken(user._id);
         // setting the cookie 
-        res.cookie('jwt',token,{ httpOnly: true, maxAge: maxAge})
+        res.cookie('jwt',token,{ httpOnly: true, maxAge: maxAge * 1000})
         res
             .status(201)
             .json({user:user._id})
@@ -71,7 +71,11 @@ module.exports.login_post = async(req,res)=>{
     console.log('api called',req.body)
     const { email, password } = req.body;
     try {
-        const user = await User.login(email,password)
+        const user = await User.login(email,password);
+        // create a token
+        const token = createToken(user._id);
+        // setting the cookie 
+        res.cookie('jwt',token,{ httpOnly: true, maxAge: maxAge * 1000})
         res
             .status(200)
             .json({user:user._id})
@@ -82,4 +86,9 @@ module.exports.login_post = async(req,res)=>{
         .status(400)
         .json({errorMsg})
     }
+}
+
+module.exports.logout_get = async(req,res)=>{
+    res.cookie('jwt','',{maxAge:1});
+    res.redirect('/');
 }
